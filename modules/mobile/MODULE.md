@@ -53,7 +53,7 @@ Done when `$MOBILE/package.json` lists `expo` and `expo-router`, `$MOBILE/src/ap
    The shipped `paths:` match the workspace layout (`apps/mobile/**`). Mobile-only project: replace the `paths:` list with `"src/**"`. Done when the frontmatter matches the layout.
 8. **E2E**: Maestro flows under `$MOBILE/.maestro/` (`maestro test .maestro/`) for device runs; CI uses Expo web + Playwright for the fast path. EAS Build/Update in CI only after the user runs `eas init` (needs an Expo account). Done when one Maestro flow file exists for the home screen.
 
-Done when `pnpm check` passes in `$PROJECT` and `cd "$MOBILE" && pnpm expo start --web` renders the home screen in `playwright-cli`.
+Done when `./scripts/check` passes in `$PROJECT` and `cd "$MOBILE" && pnpm expo start --web` renders the home screen in `playwright-cli`.
 
 ## Next steps for the user
 

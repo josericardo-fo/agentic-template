@@ -27,7 +27,7 @@ None: jobs live in `convex/` (Convex default) or outside the repo (homelab).
 3. Unit-test the job's logic with `convex-test`; add it to the `check` gate. Done when `pnpm check` runs and passes that test.
 4. Alerting: on failure, write to a `jobRuns` table or send an email (Resend) from the action. Done when a forced failure in a test leaves a `jobRuns` row (or the email call is asserted on a mock).
 
-Done when `pnpm check` passes and the job appears under Schedules in the Convex dashboard of the local deployment (`npx convex dashboard`).
+Done when `./scripts/check` passes in `$PROJECT` and the job appears under Schedules in the Convex dashboard of the local deployment (`npx convex dashboard`).
 
 ## Next steps for the user
 

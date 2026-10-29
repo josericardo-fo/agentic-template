@@ -23,8 +23,8 @@ case "$name" in
     echo "Blocked: $name holds secrets and must not be edited by the agent. Document new variables in .env.example and ask the user to set the real value." >&2
     exit 2
     ;;
-  pnpm-lock.yaml | package-lock.json | yarn.lock | bun.lock | bun.lockb | uv.lock)
-    echo "Blocked: $name is a lockfile. Change dependencies through the package manager (pnpm add/remove, uv add/remove) so it regenerates the lockfile." >&2
+  pnpm-lock.yaml | package-lock.json | yarn.lock | bun.lock | bun.lockb | uv.lock | Cargo.lock | poetry.lock | go.sum)
+    echo "Blocked: $name is a lockfile. Change dependencies through the project's package manager so it regenerates the lockfile." >&2
     exit 2
     ;;
 esac

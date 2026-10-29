@@ -73,7 +73,7 @@ Done when `$WEB/package.json` lists `next`; in a workspace, also when `$PROJECT/
 10. **CI**: append the job in `$MOD/ci-e2e.yml` under `jobs:` in `$PROJECT/.github/workflows/ci.yml` (indent it to the job level). Workspace: add `defaults: { run: { working-directory: apps/web } }` to the job and set the artifact `path` to `apps/web/playwright-report/` (`.nvmrc` and the lockfile stay at the root). Done when `ci.yml` has an `e2e` job.
 11. **AGENTS.md**: merge `$MOD/agents-snippet.md` into the placeholders of `$PROJECT/AGENTS.md`. Done when its placeholders for commands are filled.
 
-Done when `pnpm check` and `pnpm build` both exit 0 in `$PROJECT`. `pnpm test:e2e` is the e2e + accessibility gate; run it once when the browser download is available.
+Done when `./scripts/check` and `./scripts/build` both exit 0 in `$PROJECT`. `pnpm test:e2e` is the e2e + accessibility gate; run it once when the browser download is available.
 
 ## Next steps for the user
 

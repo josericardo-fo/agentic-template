@@ -53,7 +53,7 @@ None: this module extends the web app and `convex/`.
 6. **Gate**: `cd "$WEB" && pnpm exec biome check --write`, then `cd "$PROJECT" && pnpm check && pnpm build`. Done when both exit 0.
 7. **AGENTS.md**: merge `$MOD/agents-snippet.md` into `$PROJECT/AGENTS.md`. Done when the auth invariant line is present.
 
-Done when `pnpm check` and `pnpm build` exit 0 in `$PROJECT`.
+Done when `./scripts/check` and `./scripts/build` exit 0 in `$PROJECT`.
 
 ## Smoke test (required before building features on auth)
 

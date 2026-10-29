@@ -1,13 +1,6 @@
 version: 2
 updates:
-  - package-ecosystem: npm
-    directory: /
-    schedule:
-      interval: weekly
-    groups:
-      minor-and-patch:
-        update-types: [minor, patch]
-
+  # Módulos de toolchain acrescentam o ecossistema deles aqui.
   - package-ecosystem: github-actions
     directory: /
     schedule:

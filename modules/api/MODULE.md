@@ -30,7 +30,7 @@ Done when `$API/package.json` lists `hono`.
 3. Gate: add `typecheck`, `lint` (Biome), `test` and `check` scripts. In a workspace the root `check` runs it (`pnpm -r check`). Done when `cd "$PROJECT" && pnpm check` runs the API's checks and exits 0.
 4. To call Convex from the API, use `ConvexHttpClient` with the deployment URL; keep auth checks inside Convex functions. Done when any Convex call goes through `ConvexHttpClient`.
 
-Done when `pnpm check` passes and `pnpm dev` answers `GET /health` with 200.
+Done when `./scripts/check` passes in `$PROJECT` and `pnpm dev` answers `GET /health` with 200.
 
 ## Next steps for the user
 

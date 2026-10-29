@@ -29,7 +29,7 @@ None: this module adds code to the existing app and `convex/`.
 4. **Offline gate**: tests in `check` mock the model client, so the gate runs without network. Done when `pnpm check` passes with the network off.
 5. **Streaming UI** follows the web module's frontend rules (loading, error and empty states visible in screenshots). Done when screenshots of the three states exist.
 
-Done when `pnpm check` passes with mocked model calls and `pnpm eval` runs green against the real API once the user sets the key.
+Done when `./scripts/check` passes in `$PROJECT` with mocked model calls and `pnpm eval` runs green against the real API once the user sets the key.
 
 ## Next steps for the user
 

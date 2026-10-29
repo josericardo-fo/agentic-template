@@ -28,22 +28,9 @@ if [ -z "$(git status --porcelain 2>/dev/null)" ]; then
   exit 0
 fi
 
-has_check_script() {
-  [ -f package.json ] || return 1
-  if $has_jq; then
-    jq -e '.scripts.check' package.json >/dev/null 2>&1
-  else
-    grep -Eq '"check"[[:space:]]*:' package.json
-  fi
-}
-
-if has_check_script; then
-  gate=(pnpm check)
-elif [ -x scripts/check ]; then
-  gate=(./scripts/check)
-else
-  exit 0
-fi
+# Contrato da base: o gate é sempre ./scripts/check (um módulo de toolchain o fornece).
+[ -x scripts/check ] || exit 0
+gate=(./scripts/check)
 
 log="$(mktemp)"
 trap 'rm -f "$log"' EXIT

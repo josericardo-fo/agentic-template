@@ -104,7 +104,7 @@ None: this module extends the app(s) already scaffolded.
 11. **Gate**: `cd "$WEB" && pnpm exec biome check --write` (and the same in `$MOBILE` when it exists), then `cd "$PROJECT" && pnpm check`. Done when `pnpm check` exits 0.
 12. **AGENTS.md**: merge `$MOD/agents-snippet.md` into `$PROJECT/AGENTS.md`. Done when its Convex command and invariant lines are present.
 
-Done when `pnpm check` and `pnpm build` exit 0 in `$PROJECT` and `git status` shows `convex/_generated/` as files to commit.
+Done when `./scripts/check` and `./scripts/build` exit 0 in `$PROJECT` and `git status` shows `convex/_generated/` as files to commit.
 
 ## Next steps for the user (add to the skill's final list)
 

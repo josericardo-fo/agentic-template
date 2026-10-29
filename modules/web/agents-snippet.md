@@ -2,7 +2,6 @@
 
 Values for the base placeholders:
 
-- `{{CHECK_COMMAND}}`: `pnpm check`
 - `{{DEV_COMMAND}}`: `pnpm dev` (http://localhost:3000)
 - `{{TEST_COMMAND}}`: `pnpm test`
 

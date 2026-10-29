@@ -6,14 +6,15 @@ Stack: {{STACK_SUMMARY}}. Rationale in `docs/adr/0001-stack.md`.
 
 ## Commands
 
-- `{{CHECK_COMMAND}}`: the gate (typecheck + lint + unit tests). The Stop hook and CI run the same command; it is green before you report done.
+- `scripts/check`: the gate (typecheck + lint + unit tests). The Stop hook and CI run the same command; it is green before you report done.
+- `scripts/fmt <files>…` (optional, run by the format hook), `scripts/build` and `scripts/setup` (optional, run by CI): fixed names; the toolchain lives inside them.
 - `{{DEV_COMMAND}}`: dev server.
 - `{{TEST_COMMAND}}`: unit tests only.
 {{EXTRA_COMMANDS}}
 
 ## Invariants
 
-- One gate: every new check goes into `{{CHECK_COMMAND}}`, so the Stop hook and CI run it too.
+- One gate: every new check goes into `scripts/check`, so the Stop hook and CI run it too.
 - Secrets live in `.env.local` (edits blocked for the agent). Document every new variable, with a dummy value, in `.env.example`.
 - Change dependencies through the package manager; lockfiles are blocked for direct edits.
 - Tests are the spec: fix the code, keep the assertion. A test change needs its own reason in the commit message.

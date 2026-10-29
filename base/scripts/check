@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Gate do projeto (typecheck + lint + testes unitários); exit != 0 = falha.
+# Stub da base: um módulo de toolchain (ex.: modules/node) substitui este arquivo.
+
+echo "No gate defined yet (scripts/check is the base stub)."

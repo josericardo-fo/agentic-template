@@ -1,0 +1,87 @@
+# agentic-template
+
+Template para transformar uma ideia de `~/Developer/Ideas/ideas/` em um repositório com gates verdes e um agente que já tem o ferramental (inclusive de front-end) para que você só tome decisões.
+
+Os módulos são **receitas, não apps copiados**: cada `MODULE.md` diz ao agente quais scaffolders oficiais rodar, em que ordem e quais docs consultar, e traz só os arquivos pequenos que são nossos (trechos de AGENTS.md, `rules/` com `paths:`, jobs de CI, configs de gate). Assim nada fica velho em semanas.
+
+## Como usar
+
+```
+/new-project <slug>
+```
+
+A skill (`skills/new-project/SKILL.md`, com symlink em `~/.claude/skills/new-project`):
+
+1. Lê `~/Developer/Ideas/ideas/<slug>.md`, se existir.
+2. Pergunta só o que falta, uma coisa por vez (tipo, login, dados, uso comercial, IA).
+3. Propõe os módulos e espera sua confirmação.
+4. Cria `~/Developer/Projects/<slug>`: scaffold oficial → `base/` → `MODULE.md` de cada módulo → AGENTS.md preenchido → `docs/adr/0001-stack.md`.
+5. Roda o gate até ficar verde, faz `git init` e o primeiro commit.
+6. Marca a ideia como `virou-projeto`.
+7. Termina com a lista de próximos passos que exigem login (GitHub, Convex na nuvem, Firebase, deploy). A skill nunca faz esses passos.
+
+## Camadas
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 1. Global (~/.claude)    como você trabalha             │
+│    skills de processo, permissões, CLAUDE.md pessoal    │
+├─────────────────────────────────────────────────────────┤
+│ 2. base/                 como todo repo é               │
+│    AGENTS.md, hooks (format, protect, Stop→check),      │
+│    CI, issue template, docs/{adr,agents}                │
+├─────────────────────────────────────────────────────────┤
+│ 3. modules/              tipo de projeto                │
+│    web | convex | auth-firebase | mobile | api |        │
+│    automation | ai                                      │
+├─────────────────────────────────────────────────────────┤
+│ 4. docs/adr/ do projeto  decisões daquele projeto       │
+└─────────────────────────────────────────────────────────┘
+```
+
+Cada camada só contém o que vale para todos os casos dela; o que depende do projeto desce de camada.
+
+| Módulo | Tipo | O que traz |
+|---|---|---|
+| `web` | completo | Next.js + TS strict + Tailwind v4 + shadcn/ui + Biome + Vitest + Playwright/axe, `rules/frontend.md`, `DESIGN.md` |
+| `convex` | completo | Banco, funções, crons, arquivos e vetores; deployment local anônimo (sem login) |
+| `auth-firebase` | completo | Firebase Auth no cliente, Convex valida o token via OIDC (com smoke test obrigatório) |
+| `mobile` | receita | Expo + EAS, NativeWind v4, RN Reusables, `@expo/ui`, Maestro |
+| `api` | receita | Hono, só quando HTTP actions do Convex não bastam |
+| `automation` | receita | Crons do Convex; n8n/Coolify no homelab para serviços longos |
+| `ai` | receita | Vercel AI SDK / Claude Agent SDK, limite de gasto, evals mínimos |
+
+## Layout do repositório
+
+- **Um app só** (web, mobile ou API): o app fica na raiz do repo.
+- **Dois ou mais apps** (ex.: web + mobile): workspace pnpm com `apps/web`, `apps/mobile`, `apps/api`; `convex/` fica na raiz e é compartilhado. O `pnpm check` da raiz roda o `check` de cada app (`pnpm -r`).
+- As `rules/` cobrem os dois layouts pelo `paths:` (`frontend.md` casa `app/**` e `apps/web/**`). A regra de mobile vem com `apps/mobile/**`; num projeto só mobile a receita troca o `paths:` por `src/**` na cópia (o Expo usa `src/app/`), sem colidir com o `app/` do Next.
+- Specs e critérios de aceite moram no issue tracker (padrão: `.scratch/<feature>/spec.md`), não em `docs/`.
+
+## Como adicionar ou atualizar um módulo
+
+1. Crie `modules/<nome>/MODULE.md` seguindo o formato dos existentes: **Docs to consult**, **Scaffold** (o comando que cria o diretório do app, ou "None"), **Steps** (cada um com "Done when" e com o diretório explícito: `$PROJECT`, `$WEB`, `$MOBILE`, `$API`), **Next steps for the user**. Escreva em inglês (é para o agente).
+2. Coloque arquivos de overlay em `modules/<nome>/overlay/` (copiados para a raiz do projeto), regras em `modules/<nome>/rules/*.md` com frontmatter `paths:`, e o que entra no AGENTS.md em `agents-snippet.md`.
+3. Registre o módulo na ordem de aplicação e no mapeamento da seção 3 de `skills/new-project/SKILL.md`.
+4. Valide com um dry-run em `/tmp` (nunca em `~/Developer/Projects`): rode a skill até `pnpm check` e `pnpm build` passarem.
+
+Quando um scaffolder mudar (flag nova, comando renomeado), o agente que esbarrar nisso deve corrigir o `MODULE.md` aqui, não só o projeto gerado.
+
+## Crescer por gatilho
+
+Nada entra de antemão. O setup de cada projeto (e deste template) cresce assim:
+
+| Gatilho | Ação |
+|---|---|
+| O mesmo erro aconteceu 2× | Uma linha no AGENTS.md |
+| O mesmo prompt foi colado 3× | Uma skill |
+| "Tem que acontecer sempre" | Um hook |
+| A regra só vale para uma pasta | `.claude/rules/*.md` com `paths:` |
+
+Contexto da decisão: `~/Developer/Ideas/research/agentic-dev-research.md`.
+
+## Pendências conhecidas
+
+- Login real com Firebase não testado (exige um projeto Firebase; ver o smoke test em `modules/auth-firebase/MODULE.md`).
+- O passo de NativeWind / RN Reusables do módulo `mobile` ainda não foi exercitado.
+- O plugin do Expo depende de um marketplace oficial atualizado.

@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect stack
+        id: stack
+        run: |
+          if [ -f package.json ]; then echo "node=true" >> "$GITHUB_OUTPUT"; fi
+          if [ -f package.json ] && jq -e '.scripts.check' package.json >/dev/null; then echo "pnpm_check=true" >> "$GITHUB_OUTPUT"; fi
+          if [ -f package.json ] && jq -e '.scripts.build' package.json >/dev/null; then echo "pnpm_build=true" >> "$GITHUB_OUTPUT"; fi
+
+      # Versão do pnpm vem de `packageManager` no package.json; a do Node, de .nvmrc.
+      - uses: pnpm/action-setup@v4
+        if: steps.stack.outputs.node == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.stack.outputs.node == 'true'
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        if: steps.stack.outputs.node == 'true'
+        run: pnpm install --frozen-lockfile
+
+      # Mesmo gate do hook de Stop.
+      - name: Check
+        run: |
+          if [ "${{ steps.stack.outputs.pnpm_check }}" = "true" ]; then
+            pnpm check
+          elif [ -x scripts/check ]; then
+            ./scripts/check
+          else
+            echo "No gate defined yet (package.json 'check' script or scripts/check)."
+          fi
+
+      - name: Build
+        if: steps.stack.outputs.pnpm_build == 'true'
+        run: pnpm build

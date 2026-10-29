@@ -13,6 +13,8 @@ Turn idea `<slug>` into a repo at `~/Developer/Projects/<slug>` (or under anothe
 
 **Cloud boundary.** This skill creates everything on the local machine only: GitHub repos, deploys, Convex cloud projects, Firebase projects and logins all go to the final "next steps for you" list.
 
+**Defaults** (`$TPL/defaults.md`, optional): the template owner's preferred stack. Read it when it exists. Without it, recommend each tool from the idea and the available modules.
+
 ## 1. Read the idea
 
 Read `~/Developer/Ideas/ideas/<slug>.md` when it exists (frontmatter `titulo`, `tags`, sections Problema/Ideia/MVP). It may be missing; then the slug and the grill are the input. Done when you know which of the step-2 questions the file already answers.
@@ -24,14 +26,15 @@ Ask **one question at a time**, only for answers the idea file does not already 
 1. Type: web / mobile / both / API / automation.
 2. Needs login?
 3. Persistent data?
-4. Commercial use? (changes hosting: Vercel Hobby → Cloudflare or Vercel Pro)
+4. Commercial use? (can change hosting)
 5. AI features?
+6. Stack in mind? With **Defaults**, recommend "no, use the defaults"; without them, recommend a stack from the idea. Note each tool the user names.
 
-An earlier answer can settle a later question: login implies persistent data (`auth-firebase` needs `convex`), so skip question 3 and say why. Done when all five have an answer.
+An earlier answer can settle a later question: login implies persistent data (`auth-firebase` needs `convex`), so skip question 3 and say why. Done when all six have an answer.
 
 ## 3. Propose modules and wait
 
-Map answers to modules in `$TPL/modules/` and present the list with one line of reason each, plus the layout (below). Defaults: web → `web`; mobile → `mobile`; persistent data → `convex`; login → `auth-firebase` (needs `web` + `convex`); public API outside Convex → `api`; schedules/background → `automation`; AI → `ai`. Application order: `web`, `mobile`, `convex`, `auth-firebase`, `api`, `automation`, `ai`.
+Map answers to modules in `$TPL/modules/` and present the list with one line of reason each, plus the layout (below). Use the tools the user named; fill every other need from **Defaults**, or with your recommendation when there are none. A named tool with no module in `$TPL/modules/` goes in a separate "no recipe" list and follows the no-recipe path in 4.3. Whenever `web`, `mobile` or `api` is selected, add the `node` toolchain module automatically (list it with the others, no question). Application order: `node`, `web`, `mobile`, `convex`, `auth-firebase`, `api`, `automation`, `ai`.
 
 Done when the user explicitly confirms the list.
 
@@ -66,14 +69,18 @@ Every module's `MODULE.md` has a `## Scaffold` section (possibly "None") and ste
    - `README.md`: replace with a short PT-BR README (title, one-paragraph purpose, how to run).
    - Everything else: base file wins. Keep `.claude/hooks/*.sh` executable.
 
-   Then, in `$PROJECT`: when `package.json` exists, pin pnpm for CI with `npm pkg set packageManager="pnpm@$(pnpm -v)"`; when it does not, delete the `npm` entry from `.github/dependabot.yml`. Done when `CLAUDE.md` is `@AGENTS.md`, `.nvmrc` exists, and `jq -r .packageManager package.json` prints `pnpm@…` (Node projects).
+   Then copy the workflow skills: every directory in `$TPL/skills/` except `new-project` into `$PROJECT/.claude/skills/`; skip `web-design-guidelines` unless `web` or `mobile` is selected.
+
+   Done when `CLAUDE.md` is `@AGENTS.md`, `scripts/check` is executable and `.claude/skills/implement/SKILL.md` exists.
 3. **Modules.** For each selected module, in the order above, read `$TPL/modules/<name>/MODULE.md` and execute its steps **literally**, with `$MOD=$TPL/modules/<name>` and the layout variables. App modules already ran their `## Scaffold` in 4.1. Each step's "Done when" holds before the next step starts. When a step fails because a tool changed, fix the command following the module's "Docs to consult", then fix the `MODULE.md` in `$TPL` too, so the next run works. Collect each module's "Next steps for the user".
+
+   **No-recipe path**, for each tool in the "no recipe" list and for a language with no toolchain module (e.g. Python, Go): set it up with its official scaffolder or docs, replace the base's stub `scripts/check` with the real gate (typecheck + lint + unit tests), add `scripts/fmt`/`build`/`setup` when the tools have them, and record the choice in `docs/adr/0001-stack.md`.
 4. **AGENTS.md.** Fill every `{{PLACEHOLDER}}` from the idea, the grill answers and each module's `agents-snippet.md`. Delete placeholder lines with no content. Done when `grep -c '{{' AGENTS.md` prints `0` and the file stays under ~60 lines, not counting tool-managed blocks (e.g. `nextjs-agent-rules`, `convex-ai-start`).
-5. **ADR.** Write `docs/adr/0001-stack.md` from `docs/adr/0000-template.md`: context from the idea, the modules chosen, the layout, alternatives left out (e.g. Supabase/Neon, Clerk, TanStack Start), hosting (Vercel Hobby for personal, Cloudflare or Vercel Pro for commercial), and the trigger to revisit. Done when the file has no template placeholders left.
+5. **ADR.** Write `docs/adr/0001-stack.md` from `docs/adr/0000-template.md`: context from the idea, the modules chosen, the layout, alternatives left out (from **Defaults** when listed there), hosting (the user's choice, else **Defaults**, else your recommendation), and the trigger to revisit. Done when the file has no template placeholders left.
 
 ## 5. Gate until green
 
-Run the project gate (`pnpm check`, or `./scripts/check`) and `pnpm build` when present, from `$PROJECT`. Fix and re-run until both exit 0. Fix causes; tests and checks keep their strength.
+Run the project gate `./scripts/check` and `./scripts/build` when present, from `$PROJECT`. Fix and re-run until both exit 0. Fix causes; tests and checks keep their strength.
 
 Then:
 

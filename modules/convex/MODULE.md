@@ -74,9 +74,30 @@ None: this module extends the app(s) already scaffolded.
    NEXT_PUBLIC_CONVEX_URL=
    ```
    using the variable name(s) step 6 produced. Done when every URL variable in use is listed.
-9. **CI**: in `$PROJECT/.github/workflows/ci.yml`, add to the `check` job (and the `e2e` job if present) a job-level `env:` with `NEXT_PUBLIC_CONVEX_URL: https://placeholder.convex.cloud` (web module only), so `pnpm build` can prerender without a deployment. Done when both jobs carry it.
-10. **Gate**: `cd "$WEB" && pnpm exec biome check --write` (and the same in `$MOBILE` when it exists), then `cd "$PROJECT" && pnpm check`. Done when `pnpm check` exits 0.
-11. **AGENTS.md**: merge `$MOD/agents-snippet.md` into `$PROJECT/AGENTS.md`. Done when its Convex command and invariant lines are present.
+9. **CI** (web module only), in `$PROJECT/.github/workflows/ci.yml`:
+   - `check` job: add a job-level `env:` with `NEXT_PUBLIC_CONVEX_URL: https://placeholder.convex.cloud`, so `pnpm build` can prerender without a deployment.
+   - `e2e` job: **no** placeholder (process env would override `.env.local` and the app would talk to a dead URL). Add this step right before `pnpm test:e2e`, so CI gets a real local deployment and writes `.env.local`:
+     ```yaml
+           - name: Convex local deployment
+             working-directory: .
+             run: CONVEX_AGENT_MODE=anonymous npx convex dev --once </dev/null
+     ```
+   Done when only `check` carries the placeholder and `e2e` has the deployment step.
+10. **Playwright starts the backend** (web module only): in `$WEB/playwright.config.ts`, turn `webServer` into an array and put this entry first, so `pnpm test:e2e` works without a manual `npx convex dev` and stops the backend when it ends:
+    ```ts
+    {
+      // Backend Convex local (deployment anônimo); o Next lê a URL do .env.local
+      command: "npx convex dev",
+      cwd: ".", // workspace: "../.." (repo root, where convex/ lives)
+      env: { CONVEX_AGENT_MODE: "anonymous" },
+      url: "http://127.0.0.1:3210/version",
+      reuseExistingServer: !isCI,
+      timeout: 180_000,
+    },
+    ```
+    Done when, with no backend running (port 3210 free), `cd "$WEB" && pnpm test:e2e` passes and port 3210 is free again afterwards.
+11. **Gate**: `cd "$WEB" && pnpm exec biome check --write` (and the same in `$MOBILE` when it exists), then `cd "$PROJECT" && pnpm check`. Done when `pnpm check` exits 0.
+12. **AGENTS.md**: merge `$MOD/agents-snippet.md` into `$PROJECT/AGENTS.md`. Done when its Convex command and invariant lines are present.
 
 Done when `pnpm check` and `pnpm build` exit 0 in `$PROJECT` and `git status` shows `convex/_generated/` as files to commit.
 

@@ -18,7 +18,7 @@ Done when the gate is green and you know the frontier.
 
 1. Pick one frontier ticket and set it `in-progress`.
 2. Follow `/implement`: `tdd` at the ticket's seams, gate green, `code-review`.
-3. Verify every acceptance criterion against running code (e2e when the ticket touches UI).
+3. Verify every acceptance criterion against running code. After your last change, run the gate and, when the ticket touches UI or data flow, the e2e command (see `AGENTS.md` › Commands). Stop any process you started.
 4. Set the ticket `done` with a one-line note, commit, and stop. Local tracker: the status edit goes in the same commit. GitHub: close the issue after the commit, with its sha in the comment.
 
 A ticket is `done` only after step 3 passes. Acceptance criteria and tests are the spec: when one looks wrong, comment on the ticket and ask; the code changes, the criterion stays.
@@ -32,6 +32,6 @@ One agent, sequential, by default. Run frontier tickets in parallel worktrees on
 
 ## Maintenance
 
-- **Bug**: open it with `.github/ISSUE_TEMPLATE/bug.md`. Reproduce it with a failing test (`diagnosing-bugs`, then `tdd`), fix, and keep the test as the regression guard.
+- **Bug** (even a bare symptom in chat): open a ticket in the format of `.github/ISSUE_TEMPLATE/bug.md` (local tracker: `.scratch/bugs/issues/NN-<slug>.md`). Reproduce it with a failing test (`diagnosing-bugs`, then `tdd`), fix, and keep the test as the regression guard. Then Loop steps 3–4: gate and e2e after the last change, close the ticket in the same `fix:` commit.
 - **Small change**: a ticket straight away, no spec.
 - **Long session interrupted**: `/handoff`.

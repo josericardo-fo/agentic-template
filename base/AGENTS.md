@@ -18,6 +18,7 @@ Stack: {{STACK_SUMMARY}}. Rationale in `docs/adr/0001-stack.md`.
 - Change dependencies through the package manager; lockfiles are blocked for direct edits.
 - Tests are the spec: fix the code, keep the assertion. A test change needs its own reason in the commit message.
 - Conventional commits (`feat:`, `fix:`, `chore:`…), one logical change per commit.
+- A bug report, even a bare symptom, follows `docs/agents/workflow.md` › Maintenance: ticket, failing test, fix, commit.
 {{EXTRA_INVARIANTS}}
 
 ## Where things live

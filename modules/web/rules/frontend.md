@@ -32,7 +32,7 @@ Look at each screenshot. Done means: nothing overflows or overlaps at any width,
 
 ## Human-decision workflow
 
-The human decides direction; you execute. Run this when a project has no `DESIGN.md` direction yet or the user asks for a new look:
+The human decides direction; you execute. Locking or changing `DESIGN.md` is the user's call, even when a ticket or spec seems to allow it: stop and ask. Run this when a project has no `DESIGN.md` direction yet or the user asks for a new look:
 
 1. **Brief.** Ask, one at a time: purpose of the screen/product; audience; three adjectives; hard constraints (brand, accessibility, devices). Then ask for 2–3 reference sites; when there are none, suggest six (Godly, Land-book, Mobbin are good sources) and let the user pick.
 2. **Three directions.** Use the `prototype` skill to build three visually distinct directions of the same key screen. Save each under `design/options/<a|b|c>/` with screenshots at 375 and 1280. Present them side by side; the user picks one or mixes.

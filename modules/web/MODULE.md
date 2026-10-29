@@ -29,7 +29,7 @@ rm -rf "$WEB/pnpm-workspace.yaml" "$WEB/pnpm-lock.yaml" "$WEB/node_modules"
 cd "$PROJECT" && pnpm install
 ```
 
-`create-next-app` writes `$WEB/AGENTS.md` with a managed `nextjs-agent-rules` block that `next dev` re-adds when missing. Single-app: the skill's base merge keeps that block. Workspace: leave `$WEB/AGENTS.md` in place and add `$WEB/CLAUDE.md` containing `@AGENTS.md`, so Claude Code loads the block for files under `$WEB`.
+With `--no-agent-feedback`, `create-next-app` writes no `AGENTS.md`; the first `next dev` (also run by `pnpm test:e2e`) adds a managed `nextjs-agent-rules` block to `$WEB/AGENTS.md` and re-adds it when missing. Commit it. Single-app: the skill's base merge keeps that block. Workspace: leave `$WEB/AGENTS.md` in place and add `$WEB/CLAUDE.md` containing `@AGENTS.md`, so Claude Code loads the block for files under `$WEB`.
 
 Done when `$WEB/package.json` lists `next`; in a workspace, also when `$PROJECT/pnpm-lock.yaml` exists and `find "$PROJECT/apps" -maxdepth 2 -name 'pnpm-*.yaml'` prints nothing.
 
@@ -44,7 +44,7 @@ Done when `$WEB/package.json` lists `next`; in a workspace, also when `$PROJECT/
    ```bash
    cd "$PROJECT" && pnpm dlx skills add shadcn/ui --skill shadcn --agent claude-code -y
    ```
-   Done when `$PROJECT/.claude/skills/shadcn/SKILL.md` exists.
+   It also writes `$PROJECT/skills-lock.json`; commit it (it pins the skill version). Done when `$PROJECT/.claude/skills/shadcn/SKILL.md` exists.
 3. **Test tooling**:
    ```bash
    cd "$WEB" && pnpm add -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/dom \

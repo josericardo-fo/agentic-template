@@ -1,6 +1,6 @@
 # Arquitetura
 
-> Mapa curto dos módulos e das fronteiras. Atualize quando um módulo novo surgir ou uma fronteira mudar.
+> Mapa curto dos módulos e das fronteiras. Atualize quando um módulo novo surgir ou uma fronteira mudar. Descreve só o que já existe no código; planos ficam nos tickets.
 
 ## Módulos
 

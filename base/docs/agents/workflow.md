@@ -4,7 +4,7 @@ How work moves from idea to merged code, and how bugs are fixed afterwards. The 
 
 ## No backlog yet
 
-Run `/to-spec` on the idea, then `/to-tickets` on the spec. Code starts once tickets exist.
+Run `/to-spec` on the idea, then `/to-tickets` on the spec. Commit both on their own (`docs: spec e tickets de <feature>`) before the first ticket. Code starts once tickets exist.
 
 ## Start of session
 
@@ -17,7 +17,7 @@ Done when the gate is green and you know the frontier.
 ## Loop: one ticket per session
 
 1. Pick one frontier ticket and set it `in-progress`.
-2. Follow `/implement`: `tdd` at the ticket's seams, gate green, `code-review`.
+2. Follow `/implement`: `tdd` at the ticket's seams, gate green, `code-review` (docs-only tickets skip `tdd` and `code-review`).
 3. Verify every acceptance criterion against running code. After your last change, run the gate and, when the ticket touches UI or data flow, the e2e command (see `AGENTS.md` › Commands). Stop any process you started.
 4. Set the ticket `done` with a one-line note, commit, and stop. Local tracker: the status edit goes in the same commit. GitHub: close the issue after the commit, with its sha in the comment.
 

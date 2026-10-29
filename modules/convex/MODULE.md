@@ -72,8 +72,9 @@ None: this module extends the app(s) already scaffolded.
    # Convex (written to .env.local by `npx convex dev`; workspace apps get their own copy, see step 6)
    CONVEX_DEPLOYMENT=
    NEXT_PUBLIC_CONVEX_URL=
+   NEXT_PUBLIC_CONVEX_SITE_URL=
    ```
-   using the variable name(s) step 6 produced. Done when every URL variable in use is listed.
+   using the variable names step 6 produced (`.env.local` is the source of truth). Done when every variable in `.env.local` is listed.
 9. **CI** (web module only), in `$PROJECT/.github/workflows/ci.yml`:
    - `check` job: add a job-level `env:` with `NEXT_PUBLIC_CONVEX_URL: https://placeholder.convex.cloud`, so `pnpm build` can prerender without a deployment.
    - `e2e` job: **no** placeholder (process env would override `.env.local` and the app would talk to a dead URL). Add this step right before `pnpm test:e2e`, so CI gets a real local deployment and writes `.env.local`:
@@ -81,6 +82,10 @@ None: this module extends the app(s) already scaffolded.
            - name: Convex local deployment
              working-directory: .
              run: CONVEX_AGENT_MODE=anonymous npx convex dev --once </dev/null
+     ```
+     Workspace: the CLI writes `CONVEX_URL` to the root `.env.local`, but the app reads `apps/web/.env.local`. Append to that `run:`:
+     ```bash
+     && printf 'NEXT_PUBLIC_CONVEX_URL=%s\n' "$(sed -n 's/^CONVEX_URL=//p' .env.local)" > apps/web/.env.local
      ```
    Done when only `check` carries the placeholder and `e2e` has the deployment step.
 10. **Playwright starts the backend** (web module only): in `$WEB/playwright.config.ts`, turn `webServer` into an array and put this entry first, so `pnpm test:e2e` works without a manual `npx convex dev` and stops the backend when it ends:

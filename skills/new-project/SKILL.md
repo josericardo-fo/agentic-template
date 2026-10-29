@@ -101,3 +101,5 @@ End with a numbered **"Próximos passos para você"** list (PT-BR), containing o
 3. Every module's collected "Next steps for the user" (e.g. `npx convex dev`, Firebase console + smoke test, Vercel/Cloudflare setup).
 
 If the `web` module was applied, close by offering the UI decision workflow from `.claude/rules/frontend.md`: brief (4 questions + 2–3 references) → 3 directions via `prototype` → the user picks → tokens locked in `DESIGN.md`.
+
+Then offer the path from idea to code: `/to-spec` from the idea → `/to-tickets` on the spec → work the frontier one ticket per session, following `docs/agents/workflow.md` in `$PROJECT`.

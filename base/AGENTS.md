@@ -32,6 +32,10 @@ Stack: {{STACK_SUMMARY}}. Rationale in `docs/adr/0001-stack.md`.
 
 Issues, specs and acceptance criteria live in the issue tracker (default: markdown under `.scratch/<feature>/`, spec in `spec.md`). See `docs/agents/issue-tracker.md`.
 
+### Workflow
+
+Starting a session, picking a ticket, running agents in parallel, or fixing a bug: see `docs/agents/workflow.md`.
+
 ### Domain docs
 
 Single-context: `GLOSSARY.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.

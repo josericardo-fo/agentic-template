@@ -20,6 +20,14 @@ A skill (`skills/new-project/SKILL.md`, com symlink em `~/.claude/skills/new-pro
 6. Marca a ideia como `virou-projeto`.
 7. Termina com a lista de próximos passos que exigem login (GitHub, Convex na nuvem, Firebase, deploy). A skill nunca faz esses passos.
 
+## Do scaffold à manutenção
+
+```
+ideia → /new-project → /to-spec → /to-tickets → loop por ticket → bug.md
+```
+
+Depois do scaffold, a spec e os tickets moram no issue tracker, e o status dos tickets é o registro de progresso (não há `PROGRESS.md`). Cada sessão pega um ticket da frontier (pronto e sem bloqueios), segue `/implement`, marca `done` e para. Bugs entram pelo `.github/ISSUE_TEMPLATE/bug.md` e são corrigidos a partir de um teste que falha. Paralelismo (worktrees) só para tickets sem arquivos compartilhados. Detalhes em `base/docs/agents/workflow.md`.
+
 ## Camadas
 
 ```

@@ -16,6 +16,11 @@ Issues and specs for this repo live as GitHub issues; this is the single home fo
 - **Apply / remove labels**: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`
 - **Close**: post the explanation with `gh issue comment <number> --body "..."`, then `gh issue close <number>`. On an already-closed issue, `gh issue close --comment` drops the comment and still exits 0.
 
+## Status
+
+- `ready-for-agent` and `in-progress` are labels; swap them with **Apply / remove labels** when work starts. `done` is a closed issue (see **Close**, with the commit sha in the comment).
+- **Frontier**: open issues labelled `ready-for-agent` with 0 open blockers (see **Count open blockers**).
+
 Infer the repo from `git remote -v`; `gh` does this automatically when run inside a clone.
 
 File issues into the user's own repo. In a fork, `gh` can default to the upstream parent, so before the first `gh issue create` of a session, check the target with `gh repo view --json nameWithOwner` and confirm it with the user if it is not their repo.

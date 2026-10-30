@@ -28,8 +28,7 @@ ideia → /new-project → /to-spec → /to-tickets → loop por ticket → bug.
 
 Depois do scaffold, a spec e os tickets moram no issue tracker, e o status dos tickets é o registro de progresso (não há `PROGRESS.md`). Cada sessão pega um ticket da frontier (pronto e sem bloqueios), segue `/implement`, marca `done` e para. Bugs entram pelo `.github/ISSUE_TEMPLATE/bug.md` e são corrigidos a partir de um teste que falha. Paralelismo (worktrees) só para tickets sem arquivos compartilhados. Detalhes em `base/docs/agents/workflow.md`.
 
-As skills desse fluxo (`to-spec`, `to-tickets`, `implement`, `tdd`, `diagnosing-bugs`, `handoff`, `domain-modeling`, `prototype`, e `web-design-guidelines` para UI) moram em `skills/` e são copiadas para `.claude/skills/` de cada projeto: o fluxo viaja com o repo, sem depender do `~/.claude` de quem clona.
-
+As skills desse fluxo (`to-spec`, `to-tickets`, `implement`, `tdd`, `diagnosing-bugs`, `handoff`, `domain-modeling`, `prototype`, e `web-design-guidelines` para UI) são instaladas em `.claude/skills/` de cada projeto com `npx skills add` direto dos repositórios de origem (`mattpocock/skills`, `vercel-labs/agent-skills`), gerando um `skills-lock.json`; `npx skills update -p` as atualiza. Os arquivos ficam versionados no repo, então o fluxo viaja com ele sem depender do `~/.claude` de quem clona nem de Node no projeto.
 ## Camadas
 
 ```
@@ -37,10 +36,10 @@ As skills desse fluxo (`to-spec`, `to-tickets`, `implement`, `tdd`, `diagnosing-
 │ 1. Global (~/.claude)    como você trabalha             │
 │    permissões, CLAUDE.md pessoal, skills do dia a dia   │
 ├─────────────────────────────────────────────────────────┤
-│ 2. base/ + skills/       como todo repo é               │
+│ 2. base/ + npx skills    como todo repo é               │
 │    AGENTS.md, hooks (format, protect, Stop→check),      │
 │    CI, scripts/check, issue template, docs/{adr,agents},│
-│    skills do fluxo em .claude/skills/                   │
+│    skills do fluxo em .claude/skills/ (skills-lock.json)│
 ├─────────────────────────────────────────────────────────┤
 │ 3. modules/              tipo de projeto                │
 │    toolchain: node (implícito com web/mobile/api)       │

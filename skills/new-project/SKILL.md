@@ -1,6 +1,7 @@
 ---
 name: new-project
-description: Turn an idea from ~/Developer/Ideas into a scaffolded repo with green gates, using the agentic template (base + modules). Usage /new-project <slug>.
+description: Turn an idea from ~/Developer/Ideas into a scaffolded repo with green gates, using the agentic template (base + modules).
+argument-hint: "<slug>"
 disable-model-invocation: true
 ---
 
@@ -8,8 +9,8 @@ disable-model-invocation: true
 
 Turn idea `<slug>` into a repo at `~/Developer/Projects/<slug>` (or under another parent directory the user names) by applying the template's base and the chosen modules. You run official scaffolders and copy overlays; the user only makes decisions.
 
-**Template root** (`$TPL`): resolve this skill's real path and go two levels up:
-`TPL="$(cd "$(dirname "$(realpath ~/.claude/skills/new-project/SKILL.md)")/../.." && pwd)"`; fall back to `~/Developer/Projects/agentic-template`. Done when `$TPL/base/AGENTS.md` exists.
+**Template root** (`$TPL`): resolve this skill's real directory (it is usually a symlink into the template) and go two levels up:
+`TPL="$(cd "$(realpath "${CLAUDE_SKILL_DIR}")/../.." && pwd)"`; fall back to `~/Developer/Projects/agentic-template`. Done when `$TPL/base/AGENTS.md` exists.
 
 **Cloud boundary.** This skill creates everything on the local machine only: GitHub repos, deploys, Convex cloud projects, Firebase projects and logins all go to the final "next steps for you" list.
 
@@ -69,9 +70,16 @@ Every module's `MODULE.md` has a `## Scaffold` section (possibly "None") and ste
    - `README.md`: replace with a short PT-BR README (title, one-paragraph purpose, how to run).
    - Everything else: base file wins. Keep `.claude/hooks/*.sh` executable.
 
-   Then copy the workflow skills: every directory in `$TPL/skills/` except `new-project` into `$PROJECT/.claude/skills/`; skip `web-design-guidelines` unless `web` or `mobile` is selected.
+   Then install the workflow skills from their upstream sources with the `skills` CLI, so the project gets a `skills-lock.json` and can update them later. The CLI writes plain files into `.claude/skills/` and adds no project dependency; it only needs Node on this machine:
+   ```bash
+   cd "$PROJECT" && npx -y skills add mattpocock/skills -a claude-code -y \
+     -s diagnosing-bugs -s domain-modeling -s handoff -s implement -s prototype -s tdd -s to-spec -s to-tickets
+   # only when web or mobile is selected:
+   cd "$PROJECT" && npx -y skills add vercel-labs/agent-skills -a claude-code -y -s web-design-guidelines
+   ```
+   When `npx` is unavailable or the install fails (offline), skip it, keep going and note it for the hand-off.
 
-   Done when `CLAUDE.md` is `@AGENTS.md`, `scripts/check` is executable and `.claude/skills/implement/SKILL.md` exists.
+   Done when `CLAUDE.md` is `@AGENTS.md`, `scripts/check` is executable and either `.claude/skills/implement/SKILL.md` exists or the skipped install is noted.
 3. **Modules.** For each selected module, in the order above, read `$TPL/modules/<name>/MODULE.md` and execute its steps **literally**, with `$MOD=$TPL/modules/<name>` and the layout variables. App modules already ran their `## Scaffold` in 4.1. Each step's "Done when" holds before the next step starts. When a step fails because a tool changed, fix the command following the module's "Docs to consult", then fix the `MODULE.md` in `$TPL` too, so the next run works. Collect each module's "Next steps for the user".
 
    **No-recipe path**, for each tool in the "no recipe" list and for a language with no toolchain module (e.g. Python, Go): set it up with its official scaffolder or docs, replace the base's stub `scripts/check` with the real gate (typecheck + lint + unit tests), add `scripts/fmt`/`build`/`setup` when the tools have them, and record the choice in `docs/adr/0001-stack.md`.
@@ -105,7 +113,8 @@ End with a numbered **"Próximos passos para você"** list (PT-BR), containing o
 
 1. `gh repo create <slug> --private --source "$PROJECT" --push`.
 2. After the repo exists, switch the tracker to GitHub if wanted: `mv docs/agents/issue-tracker.github.md docs/agents/issue-tracker.md` and update the `### Issue tracker` line in `AGENTS.md`.
-3. Every module's collected "Next steps for the user" (e.g. `npx convex dev`, Firebase console + smoke test, Vercel/Cloudflare setup).
+3. Skills: when installed with the CLI, `npx skills update -p` refreshes them from upstream; when the install was skipped, say the workflow skills are missing and give the step-4.2 commands to run once Node is available.
+4. Every module's collected "Next steps for the user" (e.g. `npx convex dev`, Firebase console + smoke test, Vercel/Cloudflare setup).
 
 If the `web` module was applied, close by offering the UI decision workflow from `.claude/rules/frontend.md`: brief (4 questions + 2–3 references) → 3 directions via `prototype` → the user picks → tokens locked in `DESIGN.md`.
 

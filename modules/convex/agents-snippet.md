@@ -10,4 +10,5 @@ Add to `{{EXTRA_INVARIANTS}}`:
 
 ```markdown
 - All data access goes through Convex functions in `convex/`; rules in `.claude/rules/convex.md`. Commit `convex/_generated/` with the change that produced it.
+- Business rules live in plain TS modules outside `convex/` (e.g. `lib/domain/`) with no Convex imports; Convex functions stay thin wrappers around them.
 ```

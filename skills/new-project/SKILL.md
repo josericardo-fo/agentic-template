@@ -9,8 +9,8 @@ disable-model-invocation: true
 
 Turn idea `<slug>` into a repo at `~/Developer/Projects/<slug>` (or under another parent directory the user names) by applying the template's base and the chosen modules. You run official scaffolders and copy overlays; the user only makes decisions.
 
-**Template root** (`$TPL`): resolve this skill's real directory (it is usually a symlink into the template) and go two levels up:
-`TPL="$(cd "$(realpath "${CLAUDE_SKILL_DIR}")/../.." && pwd)"`; fall back to `~/Developer/Projects/agentic-template`. Done when `$TPL/base/AGENTS.md` exists.
+**Template root** (`$TPL`): the plugin root, two levels above this skill's directory (works for the installed plugin, `--plugin-dir` and a symlinked skill):
+`TPL="$(cd "$(realpath "${CLAUDE_SKILL_DIR}")/../.." && pwd)"`. Done when `$TPL/base/AGENTS.md` exists.
 
 **Cloud boundary.** This skill creates everything on the local machine only: GitHub repos, deploys, Convex cloud projects, Firebase projects and logins all go to the final "next steps for you" list.
 

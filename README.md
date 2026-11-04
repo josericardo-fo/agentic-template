@@ -4,13 +4,23 @@ Template para transformar uma ideia de `~/Developer/Ideas/ideas/` em um reposit�
 
 Os módulos são **receitas, não apps copiados**: cada `MODULE.md` diz ao agente quais scaffolders oficiais rodar, em que ordem e quais docs consultar, e traz só os arquivos pequenos que são nossos (trechos de AGENTS.md, `rules/` com `paths:`, jobs de CI, configs de gate). Assim nada fica velho em semanas.
 
+## Instalação
+
+É um plugin do Claude Code; o repo também é o marketplace:
+
+```
+/plugin install agentic-template --marketplace josericardo-fo/agentic-template
+```
+
+Ou, no shell: `claude plugin marketplace add josericardo-fo/agentic-template && claude plugin install agentic-template@josericardo-fo`. Para desenvolver o template, rode `claude --plugin-dir .` a partir deste repo.
+
 ## Como usar
 
 ```
-/new-project <slug>
+/agentic-template:new-project <slug>
 ```
 
-A skill (`skills/new-project/SKILL.md`, com symlink em `~/.claude/skills/new-project`):
+A skill (`skills/new-project/SKILL.md`):
 
 1. Lê `~/Developer/Ideas/ideas/<slug>.md`, se existir.
 2. Pergunta só o que falta, uma coisa por vez (tipo, login, dados, uso comercial, IA, stack em mente). Sem stack em mente, propõe os padrões de `defaults.md` (minhas preferências; apague ou troque o arquivo para usar outras) ou, sem ele, recomenda a partir da ideia; ferramenta sem módulo segue o caminho "sem receita" (scaffolder oficial + `scripts/check` próprio + ADR).

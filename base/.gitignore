@@ -8,6 +8,7 @@ progress.md
 
 # Artefatos do playwright-cli
 .playwright-cli/
+.playwright/
 
 # Sistema
 .DS_Store

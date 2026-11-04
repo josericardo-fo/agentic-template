@@ -44,14 +44,21 @@ Done when `$WEB/package.json` lists `next`; in a workspace, also when `$PROJECT/
    ```bash
    cd "$PROJECT" && pnpm dlx skills add shadcn/ui --skill shadcn --agent claude-code -y
    ```
-   It also writes `$PROJECT/skills-lock.json`; commit it (it pins the skill version). Done when `$PROJECT/.claude/skills/shadcn/SKILL.md` exists.
+   It also writes `$PROJECT/skills-lock.json`; commit it (it pins the skill version). Then enable the design plugins in the project settings, so anyone who clones the repo is prompted to install them (`frontend-design` for aesthetic direction, `impeccable` for critique and audit):
+   ```bash
+   cd "$PROJECT" && claude plugin install frontend-design@claude-plugins-official --scope project
+   cd "$PROJECT" && claude plugin marketplace add pbakaus/impeccable --scope project \
+     && claude plugin install impeccable@impeccable --scope project
+   ```
+   Done when `$PROJECT/.claude/skills/shadcn/SKILL.md` exists and `jq '.enabledPlugins | keys' "$PROJECT/.claude/settings.json"` lists both plugins.
 3. **Test tooling**:
    ```bash
    cd "$WEB" && pnpm add -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/dom \
      @playwright/test @axe-core/playwright
    cd "$WEB" && pnpm exec playwright install chromium
+   cd "$PROJECT" && "$WEB/node_modules/.bin/playwright" cli install --skills
    ```
-   Path aliases (`@/…`) resolve through Vite's native `resolve.tsconfigPaths` in `vitest.config.mts`; no plugin needed. Done when both commands exit 0.
+   Path aliases (`@/…`) resolve through Vite's native `resolve.tsconfigPaths` in `vitest.config.mts`; no plugin needed. `@playwright/test` ships `playwright cli`, so UI verification needs no global install; the last command writes its agent skill to `$PROJECT/.claude/skills/playwright-cli`. Done when the commands exit 0 and that `SKILL.md` exists.
 4. **Overlay files**:
    ```bash
    cp -R "$MOD/overlay/." "$WEB/"

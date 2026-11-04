@@ -74,9 +74,8 @@ Every module's `MODULE.md` has a `## Scaffold` section (possibly "None") and ste
    ```bash
    cd "$PROJECT" && npx -y skills add mattpocock/skills -a claude-code -y \
      -s diagnosing-bugs -s domain-modeling -s handoff -s implement -s prototype -s tdd -s to-spec -s to-tickets
-   # only when web or mobile is selected:
-   cd "$PROJECT" && npx -y skills add vercel-labs/agent-skills -a claude-code -y -s web-design-guidelines
    ```
+   UI tooling (design plugins, the `playwright-cli` skill) comes with the `web` and `mobile` modules.
    When `npx` is unavailable or the install fails (offline), skip it, keep going and note it for the hand-off.
 
    Done when `CLAUDE.md` is `@AGENTS.md`, `scripts/check` is executable and either `.claude/skills/implement/SKILL.md` exists or the skipped install is noted.

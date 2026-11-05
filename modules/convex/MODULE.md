@@ -40,10 +40,11 @@ None: this module extends the app(s) already scaffolded.
    cp -R "$MOD/overlay/convex/." "$PROJECT/convex/"
    mkdir -p "$PROJECT/.claude/rules" && cp "$MOD/rules/"*.md "$PROJECT/.claude/rules/"
    # web module only:
-   mkdir -p "$WEB/lib" "$WEB/components" && cp "$MOD/overlay/lib/convex.ts" "$WEB/lib/" \
-     && cp "$MOD/overlay/components/convex-client-provider.tsx" "$WEB/components/"
+   mkdir -p "$WEB/lib" "$WEB/components" "$WEB/e2e" && cp "$MOD/overlay/lib/convex.ts" "$WEB/lib/" \
+     && cp "$MOD/overlay/components/convex-client-provider.tsx" "$WEB/components/" \
+     && cp "$MOD/overlay/e2e/reset-convex.ts" "$WEB/e2e/"
    ```
-   Brings `convex/schema.ts`, `convex/health.ts`, `.claude/rules/convex.md`, and for web `lib/convex.ts` (the single `ConvexReactClient` and URL check) and `components/convex-client-provider.tsx`. Done when those files exist.
+   Brings `convex/schema.ts`, `convex/health.ts`, `.claude/rules/convex.md`, and for web `lib/convex.ts` (the single `ConvexReactClient` and URL check), `components/convex-client-provider.tsx` and `e2e/reset-convex.ts` (wired in step 10). Workspace: in the copied `reset-convex.ts`, set `CONVEX_ROOT` to `resolve(__dirname, "../../..")` (the repo root). Done when those files exist and, in a workspace, `grep -c '"../../.."' "$WEB/e2e/reset-convex.ts"` prints `1`.
 4. **Wire the provider** (web module only): in `$WEB/app/layout.tsx`, import `ConvexClientProvider` from `@/components/convex-client-provider` and wrap `{children}` inside `<body>` with it. Mobile wires its own provider (mobile step 6). Done when `layout.tsx` renders `<ConvexClientProvider>`.
 5. **Ignore and exclude**:
    - Add `.convex/` to `$PROJECT/.gitignore` when absent (local backend state).
@@ -100,7 +101,9 @@ None: this module extends the app(s) already scaffolded.
       timeout: 180_000,
     },
     ```
-    Done when, with no backend running (port 3210 free), `cd "$WEB" && pnpm test:e2e` passes and port 3210 is free again afterwards.
+    In the same file, add `globalSetup: "./e2e/reset-convex.ts",` (with the comment `// Zera o deployment Convex local antes da execução (sobe depois dos webServers)`). Playwright runs it after the web servers are up and before any test: it wipes every table of the local deployment, so each run starts from an empty database, as in CI. Without it, test data piles up across runs and tests fail for reasons unrelated to the code (bounded lists hide new rows, counts drift). It refuses to run unless `CONVEX_DEPLOYMENT` is `anonymous:` or `local:`. It also refuses when `CONVEX_DEPLOY_KEY` or `CONVEX_SELF_HOSTED_URL` is set in the environment, since the CLI prefers those over `.env.local`. The cost: `pnpm test:e2e` also wipes data entered by hand in local dev; the AGENTS.md invariant from step 12 says so.
+
+    Done when, with no backend running (port 3210 free), `cd "$WEB" && pnpm test:e2e` passes twice in a row (the second run proves the reset ran against a non-empty database without failing), and port 3210 is free again afterwards.
 11. **Gate**: `cd "$WEB" && pnpm exec biome check --write` (and the same in `$MOBILE` when it exists), then `cd "$PROJECT" && pnpm check`. Done when `pnpm check` exits 0.
 12. **AGENTS.md**: merge `$MOD/agents-snippet.md` into `$PROJECT/AGENTS.md`. Done when its Convex command and invariant lines are present.
 

@@ -55,10 +55,11 @@ Done when `$WEB/package.json` lists `next`; in a workspace, also when `$PROJECT/
    ```bash
    cd "$WEB" && pnpm add -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/dom \
      @playwright/test @axe-core/playwright
+   cd "$WEB" && pnpm add -D "@types/node@^$(cut -d. -f1 "$PROJECT/.nvmrc")"
    cd "$WEB" && pnpm exec playwright install chromium
    cd "$PROJECT" && "$WEB/node_modules/.bin/playwright" cli install --skills
    ```
-   Path aliases (`@/…`) resolve through Vite's native `resolve.tsconfigPaths` in `vitest.config.mts`; no plugin needed. `@playwright/test` ships `playwright cli`, so UI verification needs no global install; the last command writes its agent skill to `$PROJECT/.claude/skills/playwright-cli`. Done when the commands exit 0 and that `SKILL.md` exists.
+   Path aliases (`@/…`) resolve through Vite's native `resolve.tsconfigPaths` in `vitest.config.mts`; no plugin needed. `create-next-app` pins `@types/node@^20`; the second command aligns the types with the Node major in `.nvmrc`. `@playwright/test` ships `playwright cli`, so UI verification needs no global install; the last command writes its agent skill to `$PROJECT/.claude/skills/playwright-cli`. Done when the commands exit 0 and that `SKILL.md` exists.
 4. **Overlay files**:
    ```bash
    cp -R "$MOD/overlay/." "$WEB/"

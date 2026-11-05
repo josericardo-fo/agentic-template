@@ -1,4 +1,4 @@
-  # Fragmento do módulo web: e2e + acessibilidade (axe). Cole sob `jobs:` no ci.yml.
+  # E2E + acessibilidade (axe).
   e2e:
     runs-on: ubuntu-latest
     needs: check

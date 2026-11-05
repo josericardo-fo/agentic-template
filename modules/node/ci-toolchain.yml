@@ -1,5 +1,3 @@
-      # Fragmento do módulo node: toolchain do job `check`. Cole logo abaixo do
-      # marcador `# toolchain steps (inserted by modules)` do ci.yml.
       # Versão do pnpm vem de `packageManager` no package.json; a do Node, de .nvmrc.
       - uses: pnpm/action-setup@v4
 

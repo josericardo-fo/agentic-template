@@ -1,7 +1,7 @@
 {
   "name": "agentic-template",
   "description": "Turn an idea into a scaffolded repo with green gates: agent-ready base (AGENTS.md, hooks, CI) plus stack modules applied by /new-project.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "José Ricardo"
   },

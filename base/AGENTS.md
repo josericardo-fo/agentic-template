@@ -26,4 +26,5 @@ Stack: {{STACK_SUMMARY}}. Rationale in `docs/adr/0001-stack.md`.
 - Small change: plan mode, then implement.
 - Large feature: `/to-spec`, then `/to-tickets`, then `/implement` one ticket per session.
 - Bug: write the failing test first (`diagnosing-bugs`).
+- Feature touching auth, data access or endpoints: run `/security-review` before closing it. The first real screen gets an axe check in an e2e test.
 - Record a new ADR in `docs/adr/` when you pick between real alternatives.

@@ -19,6 +19,8 @@ Ruled out (list in the ADR alternatives): Supabase/Neon, Clerk, TanStack Start.
 
 Architecture preference: Convex functions stay thin (validate, check access, call domain code); business rules live in plain TS with no Convex imports.
 
+Access control (OWASP A01, no scanner catches it): every public Convex function checks access, and the caller's identity comes from `ctx.auth.getUserIdentity()`, never from an argument.
+
 ## Gotchas
 
 - **Node**: align `@types/node` with the `.nvmrc` major (`create-next-app` pins `^20`).

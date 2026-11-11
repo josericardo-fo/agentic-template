@@ -26,3 +26,14 @@ jobs:
 
       - name: Build
         run: if [ -x scripts/build ]; then ./scripts/build; fi
+
+  # Varredura de segredos no histórico (gratuita para repos de conta pessoal).
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

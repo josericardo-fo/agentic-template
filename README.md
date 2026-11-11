@@ -1,131 +1,33 @@
 # agentic-template
 
-Template para transformar uma ideia em um repositório com gates verdes e um agente que já tem o ferramental (inclusive de front-end) para que você só tome decisões.
-
-Os módulos são **receitas, não apps copiados**: cada `MODULE.md` diz ao agente quais scaffolders oficiais rodar, em que ordem e quais docs consultar, e traz só os arquivos pequenos que são nossos (trechos de AGENTS.md, `rules/` com `paths:`, jobs de CI, configs de gate). Assim nada fica velho em semanas.
-
-## Núcleo e opiniões
-
-| | O quê | Para quem usa o template |
-|---|---|---|
-| **Núcleo** (agnóstico) | `skills/new-project`, `base/` (AGENTS.md, hooks, CI, contrato `scripts/`), formato dos módulos, caminho "sem receita" | Vale para qualquer stack |
-| **Opiniões do autor** | `defaults.md` (stack preferida) e as receitas em `modules/`: Next.js, Convex, Firebase Auth, Expo, Hono, homelab com n8n/Coolify | Troque ou apague `defaults.md` e adicione os seus módulos; a skill recomenda a partir da ideia quando não há padrões |
-| **Convenção pessoal** | Ideias em `~/Developer/Ideas/ideas/<slug>.md`, projetos em `~/Developer/Projects/<slug>` | Opcional: sem o arquivo da ideia, o slug e as perguntas bastam; o diretório pai pode ser outro |
+Skill pessoal `/new-project` do Claude Code: transforma uma ideia num repositório com gate verde e o fluxo de trabalho com agentes já instalado.
 
 ## Instalação
 
-É um plugin do Claude Code; o repo também é o marketplace:
-
 ```
-/plugin install agentic-template --marketplace josericardo-fo/agentic-template
+ln -s ~/Developer/Projects/agentic-template ~/.claude/skills/new-project
 ```
 
-Ou, no shell: `claude plugin marketplace add josericardo-fo/agentic-template && claude plugin install agentic-template@josericardo-fo`. Para desenvolver o template, rode `claude --plugin-dir .` a partir deste repo.
-
-## Como usar
+## Uso
 
 ```
-/agentic-template:new-project <slug>
+/new-project <slug> [diretório-pai]
 ```
 
-A skill (`skills/new-project/SKILL.md`):
+A skill (`SKILL.md`) faz poucas perguntas, propõe a stack de `stack.md`, roda os scaffolders oficiais, copia `base/`, escreve o `scripts/check` real, instala as skills de `mattpocock/skills` no projeto, roda o gate até ficar verde e faz o primeiro commit. Login em nuvem, repo no GitHub e deploy ficam na lista de próximos passos.
 
-1. Lê `~/Developer/Ideas/ideas/<slug>.md`, se existir.
-2. Pergunta só o que falta, uma coisa por vez (tipo, login, dados, uso comercial, IA, stack em mente). Sem stack em mente, propõe os padrões de `defaults.md` (minhas preferências; apague ou troque o arquivo para usar outras) ou, sem ele, recomenda a partir da ideia; ferramenta sem módulo segue o caminho "sem receita" (scaffolder oficial + `scripts/check` próprio + ADR).
-3. Propõe os módulos e espera sua confirmação.
-4. Cria `~/Developer/Projects/<slug>`: scaffold oficial → `base/` → `MODULE.md` de cada módulo → AGENTS.md preenchido → `docs/adr/0001-stack.md`.
-5. Roda o gate até ficar verde, faz `git init` e o primeiro commit.
-6. Marca a ideia como `virou-projeto`.
-7. Termina com a lista de próximos passos que exigem login (GitHub, Convex na nuvem, Firebase, deploy). A skill nunca faz esses passos.
+## O que tem aqui
 
-## Do scaffold à manutenção
-
-```
-ideia → /new-project → /to-spec → /to-tickets → loop por ticket → bug.md
-```
-
-Depois do scaffold, a spec e os tickets moram no issue tracker, e o status dos tickets é o registro de progresso (não há `PROGRESS.md`). Cada sessão pega um ticket da frontier (pronto e sem bloqueios), segue `/implement`, marca `done` e para. Bugs entram pelo `.github/ISSUE_TEMPLATE/bug.md` e são corrigidos a partir de um teste que falha. Paralelismo (worktrees) só para tickets sem arquivos compartilhados. Detalhes em `base/docs/agents/workflow.md`.
-
-As skills desse fluxo (`to-spec`, `to-tickets`, `implement`, `tdd`, `diagnosing-bugs`, `handoff`, `domain-modeling`, `prototype`) são instaladas em `.claude/skills/` de cada projeto com `npx skills add` direto do repositório de origem (`mattpocock/skills`), gerando um `skills-lock.json`; `npx skills update -p` as atualiza. Os arquivos ficam versionados no repo, então o fluxo viaja com ele sem depender do `~/.claude` de quem clona nem de Node no projeto. Se a mesma skill também existir em `~/.claude/skills/`, o Claude Code usa a pessoal (pessoal > projeto); mantenha as duas atualizadas (`npx skills update -g` e `-p`) para não divergirem.
-
-O ferramental de UI também viaja com o projeto: o módulo `web` habilita os plugins `frontend-design` (direção estética) e `impeccable` (crítica e auditoria) no `.claude/settings.json` do projeto, e instala a skill `playwright-cli` a partir do `@playwright/test` local, sem CLI global.
-
-## Camadas
-
-```
-┌─────────────────────────────────────────────────────────┐
-│ 1. Global (~/.claude)    como você trabalha             │
-│    permissões, CLAUDE.md pessoal, skills do dia a dia   │
-├─────────────────────────────────────────────────────────┤
-│ 2. base/ + npx skills    como todo repo é               │
-│    AGENTS.md, hooks (format, protect, Stop→check),      │
-│    CI, scripts/check, issue template, docs/{adr,agents},│
-│    skills do fluxo em .claude/skills/ (skills-lock.json)│
-├─────────────────────────────────────────────────────────┤
-│ 3. modules/              tipo de projeto                │
-│    toolchain: node (implícito com web/mobile/api)       │
-│    web | convex | auth-firebase | mobile | api |        │
-│    automation | ai                                      │
-├─────────────────────────────────────────────────────────┤
-│ 4. docs/adr/ do projeto  decisões daquele projeto       │
-└─────────────────────────────────────────────────────────┘
-```
-
-Cada camada só contém o que vale para todos os casos dela; o que depende do projeto desce de camada.
-
-| Módulo | Tipo | O que traz |
-|---|---|---|
-| `node` | toolchain | Node (`.nvmrc`) + pnpm (`packageManager`), `scripts/{check,build,setup,fmt}`, steps de CI, Dependabot `npm`; aplicado automaticamente com `web`, `mobile` ou `api` |
-| `web` | completo | Next.js + TS strict + Tailwind v4 + shadcn/ui + Biome + Vitest + Playwright/axe, `rules/frontend.md`, `DESIGN.md` |
-| `convex` | completo | Banco, funções, crons, arquivos e vetores; deployment local anônimo (sem login) |
-| `auth-firebase` | completo | Firebase Auth no cliente, Convex valida o token via OIDC (com smoke test obrigatório) |
-| `mobile` | receita | Expo + EAS, NativeWind v4, RN Reusables, `@expo/ui`, Maestro |
-| `api` | receita | Hono, só quando HTTP actions do Convex não bastam |
-| `automation` | receita | Crons do Convex; n8n/Coolify no homelab para serviços longos |
-| `ai` | receita | Vercel AI SDK / Claude Agent SDK, limite de gasto, evals mínimos |
-
-## Contrato de comandos
-
-A base não conhece nenhuma stack: hooks e CI só chamam comandos com nome fixo em `scripts/`. Quem decide a ferramenta é um módulo de toolchain (hoje, `node`); sem ele, o projeto escreve os scripts com as próprias ferramentas e registra no ADR.
-
-| Comando | Obrigatório | Semântica |
-|---|---|---|
-| `scripts/check` | sim | gate completo (typecheck + lint + testes unitários); exit ≠ 0 = falha. A base traz um stub que só avisa e sai 0 |
-| `scripts/fmt <arquivo>…` | não | formata os arquivos dados; silencioso; nunca falha (chamado pelo hook de format) |
-| `scripts/build` | não | build de produção (CI roda depois do gate) |
-| `scripts/setup` | não | instala dependências (CI roda depois dos steps de toolchain) |
-
-## Layout do repositório
-
-- **Um app só** (web, mobile ou API): o app fica na raiz do repo.
-- **Dois ou mais apps** (ex.: web + mobile): workspace pnpm com `apps/web`, `apps/mobile`, `apps/api`; `convex/` fica na raiz e é compartilhado. O `pnpm check` da raiz roda o `check` de cada app (`pnpm -r`).
-- As `rules/` cobrem os dois layouts pelo `paths:` (`frontend.md` casa `app/**` e `apps/web/**`). A regra de mobile vem com `apps/mobile/**`; num projeto só mobile a receita troca o `paths:` por `src/**` na cópia (o Expo usa `src/app/`), sem colidir com o `app/` do Next.
-- Specs e critérios de aceite moram no issue tracker (padrão: `.scratch/<feature>/spec.md`), não em `docs/`.
-
-## Como adicionar ou atualizar um módulo
-
-1. Crie `modules/<nome>/MODULE.md` seguindo o formato dos existentes: **Docs to consult**, **Scaffold** (o comando que cria o diretório do app, ou "None"), **Steps** (cada um com "Done when" e com o diretório explícito: `$PROJECT`, `$WEB`, `$MOBILE`, `$API`), **Next steps for the user**. Escreva em inglês (é para o agente).
-2. Coloque arquivos de overlay em `modules/<nome>/overlay/` (copiados para a raiz do projeto), regras em `modules/<nome>/rules/*.md` com frontmatter `paths:`, e o que entra no AGENTS.md em `agents-snippet.md`.
-3. Registre o módulo na ordem de aplicação (seção 3) de `skills/new-project/SKILL.md` e, se ele virar o padrão para alguma necessidade, em `defaults.md`.
-4. Valide com um dry-run em `/tmp` (nunca em `~/Developer/Projects`): rode a skill até `./scripts/check` e `./scripts/build` passarem.
-
-Quando um scaffolder mudar (flag nova, comando renomeado), o agente que esbarrar nisso deve corrigir o `MODULE.md` aqui, não só o projeto gerado.
+- `SKILL.md`: o passo a passo para o agente.
+- `stack.md`: minha stack preferida e as pegadinhas que custaram tempo para descobrir. Nada de receitas: o agente usa o scaffolder oficial e a doc atual.
+- `base/`: o que todo projeto recebe. AGENTS.md curto, hooks (format, protect, Stop → `scripts/check`), CI e o stub de `scripts/check`.
 
 ## Crescer por gatilho
 
-Nada entra de antemão. O setup de cada projeto (e deste template) cresce assim:
-
 | Gatilho | Ação |
 |---|---|
-| O mesmo erro aconteceu 2× | Uma linha no AGENTS.md |
+| O mesmo erro aconteceu 2× | Uma linha no AGENTS.md (ou em `stack.md`, se valer para todo projeto) |
 | O mesmo prompt foi colado 3× | Uma skill |
 | "Tem que acontecer sempre" | Um hook |
-| A regra só vale para uma pasta | `.claude/rules/*.md` com `paths:` |
 
-Contexto das decisões: uma pesquisa privada do autor (fontes oficiais, estudos e comunidade, out/2026); os pontos que viraram regra estão neste README e nos `MODULE.md`.
-
-## Pendências conhecidas
-
-- Login real com Firebase não testado (exige um projeto Firebase; ver o smoke test em `modules/auth-firebase/MODULE.md`).
-- O passo de NativeWind / RN Reusables do módulo `mobile` ainda não foi exercitado.
-- O plugin do Expo depende de um marketplace oficial atualizado.
+Quando um scaffolder mudar e quebrar a skill, corrija aqui, não só no projeto gerado.

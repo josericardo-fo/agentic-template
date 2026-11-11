@@ -1,7 +1,0 @@
-      # Versão do pnpm vem de `packageManager` no package.json; a do Node, de .nvmrc.
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm

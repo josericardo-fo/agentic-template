@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-# Instala as dependências exatamente como no lockfile (usado pela CI).
-set -euo pipefail
-
-exec pnpm install --frozen-lockfile

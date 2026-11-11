@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # toolchain steps (inserted by modules)
+      # toolchain steps (inserted by /new-project)
 
       - name: Setup
         run: if [ -x scripts/setup ]; then ./scripts/setup; fi

@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-# Build de produção: roda `pnpm build` quando o package.json define o script.
-set -euo pipefail
-
-exec pnpm run --if-present build
